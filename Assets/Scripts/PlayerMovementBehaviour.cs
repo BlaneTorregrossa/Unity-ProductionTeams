@@ -16,13 +16,14 @@ public class PlayerMovementBehaviour : MonoBehaviour
     public float maxTorque = 300f;
     public int stepsAbove = 1;
     public int stepsBelow = 5;
-    
+
+    private Animator animator;
 
     // Use this for initialization
     private void Start()
     {
         //rb = GetComponent<Rigidbody>();
-        
+        animator = GetComponent<Animator>();
         m_Wheels = GetComponentsInChildren<WheelCollider>();
 
         for (var i = 0; i < m_Wheels.Length; i++)
@@ -46,6 +47,38 @@ public class PlayerMovementBehaviour : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Escape))
             SceneManager.LoadScene(0);
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            animator.SetBool("Reverse", false);
+            animator.SetBool("Forward", true);
+        }
+            
+        if (Input.GetKey(KeyCode.S))
+        {
+            animator.SetBool("Forward", false);
+            animator.SetBool("Reverse", true);
+        }
+        
+        if(Input.GetKey(KeyCode.A))
+        {
+            animator.SetBool("RightTurn", false);
+            animator.SetBool("LeftTurn", true);
+        }          
+
+        if(Input.GetKey(KeyCode.D))
+        {
+            animator.SetBool("LeftTurn", false);
+            animator.SetBool("RightTurn", true);
+        }
+
+        if(!Input.GetKeyDown(KeyCode.A) && !Input.GetKeyDown(KeyCode.D) && !Input.GetKeyDown(KeyCode.W) && Input.GetKeyDown(KeyCode.S))
+        {
+            animator.SetBool("Reverse", false);
+            animator.SetBool("Forward", false);
+            animator.SetBool("LeftTurn", false);
+            animator.SetBool("RightTurn", false);
+        }
 
         foreach (var wheel in m_Wheels)
         {
