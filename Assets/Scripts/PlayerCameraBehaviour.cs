@@ -1,48 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.SocialPlatforms;
+﻿using UnityEngine;
 
 public class PlayerCameraBehaviour : MonoBehaviour
 {
-    public GameObject PlayerToFollow;
-    private Vector3 offset;
-    private float nearClip;
-    public float CameraDistance;
-    private RaycastHit hit;
+    public Transform playerToFollow;
+    public float height;
+    public float distance;
+
+    public float smoother= 5.0f;
+    public float rotationSmoother = 10.0f;
+    public float bumperCameraHeight = 4.5f;
+
     // Use this for initialization
     void Start()
     {
-        nearClip = GetComponent<Camera>().nearClipPlane;
-        offset = transform.position - PlayerToFollow.transform.position;
+
     }
 
-    // Update is called once per frame
-    void Update()
+    // Update is called once per framedw
+    void FixedUpdate()
     {
-        //basic camera movement         
-        transform.forward = PlayerToFollow.transform.forward;
-        transform.position = PlayerToFollow.transform.position - (transform.forward * CameraDistance) + new Vector3(0,5,0);
-        
+        //basic camera movement
+        Vector3 wantedPosition = playerToFollow.TransformPoint(0, height, -distance);
+        RaycastHit hit;
 
-        //Checks to move nearClip for obsticles
-        if (!Physics.Raycast(transform.position, Vector3.forward, out hit, 10))
+        //Checks to move camera for obsticles    
+        Vector3 back = playerToFollow.transform.TransformDirection(-1 * Vector3.forward);
+        if (Physics.Raycast(playerToFollow.TransformPoint(0, 1, 0), back, out hit, 2.5f)
+            && hit.transform != playerToFollow)
         {
-            nearClip = 0.3f;
+            wantedPosition = new Vector3(hit.point.x, Mathf.Lerp(hit.point.y + bumperCameraHeight, wantedPosition.y, Time.deltaTime * smoother), hit.point.z);
         }
-        else
-        {
-            var distance = hit.distance;
-            var distanceToCenter = hit.collider.bounds.extents.z;
-            nearClip = .3f + (distance + distanceToCenter * 2f);
-        }
-    }
 
-
-    //Draws a line for the collision of the RayCast
-    void OnDrawGizmos()
-    {        
-            Gizmos.DrawLine(transform.position, transform.forward * 2);
+        //fixes rotation and position of the camera
+        transform.position = Vector3.Lerp(transform.position, wantedPosition, Time.deltaTime * smoother);
+        Vector3 lookPosition = playerToFollow.TransformPoint(0, 0, 3);
+        transform.rotation = Quaternion.LookRotation(lookPosition - transform.position, playerToFollow.up);
     }
 }

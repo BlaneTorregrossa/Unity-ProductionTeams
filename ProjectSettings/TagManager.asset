@@ -4,9 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - Bullet
+  - Character
+  - Quit
   - Start
   - Credits
-  - Quit
+  - Wall
+  - Opponent
   layers:
   - Default
   - TransparentFX
@@ -16,7 +20,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Car
   - 
   - 
   - 
