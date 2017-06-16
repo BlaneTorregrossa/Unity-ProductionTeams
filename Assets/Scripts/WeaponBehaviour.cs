@@ -6,22 +6,24 @@ using UnityEngine.SceneManagement;
 
 public class WeaponBehaviour : MonoBehaviour
 {
+    public static WeaponBehaviour instance;
     public GameObject ProjectileA;
     public GameObject ProjectileB;
     public GameObject ProjectileC;
     public GameObject ProjectileD;
     public GameObject Character;
+    public int projectileCounter;
+    public bool InSight;
 
-    //private Transform CharacterTransform;
     private GameObject CurrentProjectile;
     private GameObject _projectileObject;
-    //private Rigidbody _projectileRigidbody;
     private Transform _projectileTransform;
     private int _currentRoll;
 
     public void ShootProjectile()
     {
         Roll();
+        projectileCounter++;
         _projectileObject = Instantiate(CurrentProjectile, _projectileTransform.transform.position,
             _projectileTransform.transform.rotation);
         _projectileObject.transform.position = Character.transform.position + Character.transform.forward;
@@ -59,18 +61,26 @@ public class WeaponBehaviour : MonoBehaviour
                 }
         }
     }
-
+     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && projectileCounter < 3)
         {
             ShootProjectile();
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && projectileCounter >= 3)
+        {
+            Debug.Log("Too many projectiles in scene to fire more");
+        }
+        if (projectileCounter < 0)
+        {
+            projectileCounter = 0;
         }
     }
 
     private void Start()
     {
-
+        instance = this;
     }
 
 }
